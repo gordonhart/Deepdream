@@ -28,6 +28,8 @@ def main():
 	d = Dreamer(my_image) # create new dreamer with reference to image object
 
 	img = d.get_dream(octaves=opts['octs'], octave_scale=opts['os'], end_key=opts['ek'])
+	
+	# this block is for iterating over the same image multiple times
 	'''
 	for i in xrange(10):
 		outname = outname[:-4]
