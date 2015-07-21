@@ -26,24 +26,8 @@ def main():
 	my_image = Image.open(fullname, 'r') # open image
 
 	d = Dreamer(my_image) # create new dreamer with reference to image object
-
-	img = d.get_dream(octaves=opts['octs'], octave_scale=opts['os'], end_key=opts['ek'])
 	
-	# this block is for iterating over the same image multiple times
-	'''
-	for i in xrange(10):
-		outname = outname[:-4]
-		outname += "%2d" % i
-		outname += '.jpg'
-
-		img = d.get_dream(octaves=opts['octs'], octave_scale=opts['os'], end_key=opts['ek'])
-		d.set_image(img)
-
-		my_image.putdata(img)
-		my_image.save(outname)
-
-		print("\nsaved image as: %s" % outname)
-	'''
+	img = iterate(d, my_image, outname, opts, save=False) # this function is for iterating over the same image multiple times
 
 	out = s.cut_jpg(img) # send dream buffer object to be cut into transparent PNG
 
@@ -57,6 +41,31 @@ def main():
 
 
 # HELPERS --------------------------------------------------------------------------------
+
+
+def iterate(dream, image, name, options, times=1, save=True):
+	'''
+	iterate over the same image a specified number of times
+	images get stranger and stranger with each pass...
+	'''
+	for i in xrange(times):
+		name = name[:-4] # cut off extension
+
+		if i > 0: # only add number if it's not the first image
+			name += "%2d" % i # add number to save name
+		
+		name += '.jpg'
+
+		new_img = dream.get_dream(octaves=options['octs'], octave_scale=options['os'], end_key=options['ek'])
+		dream.set_image(new_img) # set the dream image to the current pass
+
+		if save:
+			image.putdata(new_img)
+			image.save(name)
+
+			print("\nsaved image as: %s" % name)
+
+	return new_img
 
 
 def get_options():
